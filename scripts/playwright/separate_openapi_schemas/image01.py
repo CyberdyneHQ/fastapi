@@ -3,8 +3,8 @@ import subprocess
 from playwright.sync_api import Playwright, sync_playwright
 
 
-# Run playwright codegen to generate the code below, copy paste the sections in run()
-def run(playwright: Playwright) -> None:
+# Run playwright codegen to generate the code below, copy paste the sections in capture()
+def capture(playwright: Playwright) -> None:
     browser = playwright.chromium.launch(headless=False)
     # Update the viewport manually
     context = browser.new_context(viewport={"width": 960, "height": 1080})
@@ -27,6 +27,6 @@ process = subprocess.Popen(
 )
 try:
     with sync_playwright() as playwright:
-        run(playwright)
+        capture(playwright)
 finally:
     process.terminate()
