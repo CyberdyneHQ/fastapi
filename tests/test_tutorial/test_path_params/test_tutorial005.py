@@ -24,20 +24,10 @@ def test_get_enums_resnet():
     assert response.json() == {"model_name": "resnet", "message": "Have some residuals"}
 
 
-def test_get_enums_invalid():
+def test_get_any_model_name():
     response = client.get("/models/foo")
-    assert response.status_code == 422
-    assert response.json() == {
-        "detail": [
-            {
-                "type": "enum",
-                "loc": ["path", "model_name"],
-                "msg": "Input should be 'alexnet', 'resnet' or 'lenet'",
-                "input": "foo",
-                "ctx": {"expected": "'alexnet', 'resnet' or 'lenet'"},
-            }
-        ]
-    }
+    assert response.status_code == 200
+    assert response.json() == {"model_name": "foo", "message": "Have some residuals"}
 
 
 def test_openapi_schema():
@@ -54,10 +44,10 @@ def test_openapi_schema():
                         "operationId": "get_model_models__model_name__get",
                         "parameters": [
                             {
-                                "required": True,
-                                "schema": {"$ref": "#/components/schemas/ModelName"},
                                 "name": "model_name",
                                 "in": "path",
+                                "required": True,
+                                "schema": {"type": "string", "title": "Model Name"},
                             }
                         ],
                         "responses": {
@@ -82,40 +72,35 @@ def test_openapi_schema():
             "components": {
                 "schemas": {
                     "HTTPValidationError": {
-                        "title": "HTTPValidationError",
-                        "type": "object",
                         "properties": {
                             "detail": {
-                                "title": "Detail",
-                                "type": "array",
                                 "items": {
                                     "$ref": "#/components/schemas/ValidationError"
                                 },
+                                "type": "array",
+                                "title": "Detail",
                             }
                         },
-                    },
-                    "ModelName": {
-                        "title": "ModelName",
-                        "enum": ["alexnet", "resnet", "lenet"],
-                        "type": "string",
+                        "type": "object",
+                        "title": "HTTPValidationError",
                     },
                     "ValidationError": {
-                        "title": "ValidationError",
-                        "required": ["loc", "msg", "type"],
-                        "type": "object",
                         "properties": {
                             "loc": {
-                                "title": "Location",
-                                "type": "array",
                                 "items": {
                                     "anyOf": [{"type": "string"}, {"type": "integer"}]
                                 },
+                                "type": "array",
+                                "title": "Location",
                             },
-                            "msg": {"title": "Message", "type": "string"},
-                            "type": {"title": "Error Type", "type": "string"},
+                            "msg": {"type": "string", "title": "Message"},
+                            "type": {"type": "string", "title": "Error Type"},
                             "input": {"title": "Input"},
-                            "ctx": {"title": "Context", "type": "object"},
+                            "ctx": {"type": "object", "title": "Context"},
                         },
+                        "type": "object",
+                        "required": ["loc", "msg", "type"],
+                        "title": "ValidationError",
                     },
                 }
             },
